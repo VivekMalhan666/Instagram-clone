@@ -1,5 +1,11 @@
 import Head from 'next/head';
 
+// Code splitting using dynamic loading
+import dynamic from 'next/dynamic';
+
+// Import using dynamic loading
+const Header = dynamic(() => import('../components/Header'));
+
 export default function Home() {
   return (
     <div className="">
@@ -8,9 +14,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>This is the Instagram clone</h1>
-
       {/* Header */}
+      <Header />
 
       {/* Feed */}
 
