@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic';
 // Import Components using dynamic loading
 const Stories = dynamic(() => import('./Stories'));
 const Posts = dynamic(() => import('./Posts'));
+const MiniProfile = dynamic(() => import('./MiniProfile'));
+const Suggestions = dynamic(() => import('./Suggestions'));
 
 function Feed() {
   return (
@@ -17,9 +19,13 @@ function Feed() {
       </section>
 
       {/* Right Section */}
-      <section>
-        {/* mini profile */}
-        {/* Suggestions */}
+      <section className="hidden xl:inline-grid md:col-span-1">
+        <div className="fixed">
+          {/* mini profile */}
+          <MiniProfile />
+          {/* Suggestions */}
+          <Suggestions />
+        </div>
       </section>
     </main>
   );
