@@ -1,47 +1,34 @@
 //  Code splitting using dynamic loading
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+import { db } from '../firebase';
 
 // Importing component using dynamic loading
 const Post = dynamic(() => import('./Post'));
 
-const posts = [
-  {
-    id: '123',
-    username: 'rjvivekmalhan',
-    userImg:
-      'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    img: 'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    caption: "Let's go",
-  },
-  {
-    id: '234',
-    username: 'rjvivekmalhan',
-    userImg:
-      'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    img: 'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    caption: 'One step towards success',
-  },
-  {
-    id: '345',
-    username: 'rjvivekmalhan',
-    userImg:
-      'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    img: 'https://media.pri.org/s3fs-public/styles/story_main/public/story/images/mr.%20robot.jpg?itok=4iHmKmck',
-    caption: 'Failure is just a stepping stone',
-  },
-];
-
 function Posts() {
+  const [posts, setPosts] = useState([]);
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, 'posts'), orderBy('timestamp', 'desc')),
+        (snapshot) => {
+          setPosts(snapshot.docs);
+        }
+      ),
+    [db]
+  );
   return (
     <div>
-      {posts.map(({ id, userImg, username, caption, img }) => (
+      {posts.map((post) => (
         <Post
-          key={id}
-          id={id}
-          username={username}
-          userImg={userImg}
-          img={img}
-          caption={caption}
+          key={post.id}
+          id={post.id}
+          username={post.data().username}
+          userImg={post.data().profileImg}
+          img={post.data().image}
+          caption={post.data().caption}
         />
       ))}
     </div>

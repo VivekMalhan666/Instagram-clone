@@ -1,11 +1,23 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { CameraIcon } from '@heroicons/react/outline';
+import { useSession } from 'next-auth/react';
 import { Fragment, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { modalState } from '../atoms/modalAtom';
+import { db, storage } from '../firebase';
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from 'firebase/firestore';
+import { ref, getDownloadURL, uploadString } from 'firebase/storage';
 
 function Modal() {
+  const { data: session } = useSession();
   const [openModal, setOpenModal] = useRecoilState(modalState);
+  const [loading, setLoading] = useState(false);
   // Adding Caption
   const captionRef = useRef(null);
   // Image uploading
@@ -19,6 +31,29 @@ function Modal() {
     reader.onload = (readerEvent) => {
       setUploadedPicture(readerEvent.target.result);
     };
+  };
+  // Upload post
+  const uploadPost = async () => {
+    if (loading) return;
+    setLoading(true);
+    const postRef = await addDoc(collection(db, 'posts'), {
+      username: session.user.username,
+      caption: captionRef.current.value,
+      profileImg: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+    const imageRef = ref(storage, `posts/${postRef.id}/image`);
+    await uploadString(imageRef, uploadedPicture, 'data_url').then(
+      async (snapshot) => {
+        const downloadURL = await getDownloadURL(imageRef);
+        await updateDoc(doc(db, 'posts', postRef.id), {
+          image: downloadURL,
+        });
+      }
+    );
+    setOpenModal(false);
+    setLoading(false);
+    setUploadedPicture(false);
   };
   return (
     <Transition.Root show={openModal} as={Fragment}>
@@ -104,11 +139,11 @@ function Modal() {
                   </div>
                   <button
                     type="button"
-                    // disabled={!uploadedPicture}
-                    // onClick={uploadPost}
+                    disabled={!uploadedPicture}
+                    onClick={uploadPost}
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
                   >
-                    Upload Post
+                    {loading ? 'Uploading...' : 'Upload Post'}
                   </button>
                 </div>
               </div>
