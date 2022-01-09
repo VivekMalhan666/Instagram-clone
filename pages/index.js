@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 // Import using dynamic loading
 const Header = dynamic(() => import('../components/Header'));
 const Feed = dynamic(() => import('../components/Feed'));
+const Modal = dynamic(() => import('../components/Modal'));
 
 export default function Home() {
   return (
@@ -15,13 +16,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Modal */}
+      <Modal />
+
       {/* Header */}
       <Header />
 
       {/* Feed */}
       <Feed />
-
-      {/* Modal */}
     </div>
   );
 }
