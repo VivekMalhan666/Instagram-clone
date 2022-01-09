@@ -9,15 +9,20 @@ import {
 } from '@heroicons/react/outline';
 import { HomeIcon } from '@heroicons/react/outline';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 function Header() {
   const { data: session } = useSession();
+  const router = useRouter();
   return (
     <div className="shadow-sm border-b bg-white sticky top-0 z-50">
       <div className="flex justify-between mx-5 lg:mx-auto bg-white max-w-6xl ">
         {/* Left - Instagram logo  */}
         {/* Instagram logo */}
-        <div className="relative w-10  lg:hidden flex-shrink-0 cursor-pointer">
+        <div
+          onClick={() => router.push('/')}
+          className="relative w-10  lg:hidden flex-shrink-0 cursor-pointer"
+        >
           <Image
             src="https://links.papareact.com/jjm"
             objectFit="contain"
@@ -25,7 +30,10 @@ function Header() {
           />
         </div>
         {/* Instagram text */}
-        <div className="relative w-24 hidden lg:inline-grid cursor-pointer">
+        <div
+          onClick={() => router.push('/')}
+          className="relative w-24 hidden lg:inline-grid cursor-pointer"
+        >
           <Image
             src="https://links.papareact.com/ocw"
             objectFit="contain"
@@ -49,7 +57,7 @@ function Header() {
 
         {/* Right */}
         <div className="flex items-center justify-end space-x-4">
-          <HomeIcon className="navBtn" />
+          <HomeIcon className="navBtn" onClick={() => router.push('/')} />
           <MenuIcon className="h-6 md:hidden cursor-pointer" />
           {session ? (
             <>
